@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background-color: #2a2a2a;
+      color: #fff;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      margin: 20px 0;
+      text-transform: uppercase;
+      font-size: 24px;
+      color: #f7c59f;
+    }
+
+    #map {
+      width: 100vw;
+      height: 90vh;
+    }
+
+    .tooltip {
+      position: absolute;
+      background-color: #fff;
+      color: #333;
+      border: 1px solid #c87a5f;
+      border-radius: 5px;
+      padding: 10px;
+      font-size: 14px;
+      pointer-events: none;
+      opacity: 0;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .legend-container {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 20px;
+      height: 20px;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <h2>Singapore Population: Warm Tones Choropleth</h2>
+  <p>Visualization by Sam Koh (Student ID: 1009697)</p>
+  <div id="map"></div>
+  <div id="tooltip" class="tooltip"></div>
+
+  <div class="legend-container">
+    <div class="legend-item">
+      <div style="background-color: #ffd4a3;" class="legend-color"></div>
+      <span>0 - 20,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #ffb174;" class="legend-color"></div>
+      <span>20,001 - 40,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #ff8f47;" class="legend-color"></div>
+      <span>40,001 - 60,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #ff6c1a;" class="legend-color"></div>
+      <span>60,001 - 80,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #e6550d;" class="legend-color"></div>
+      <span>80,001 - 100,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #a63603;" class="legend-color"></div>
+      <span>100,001 - 120,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #7f2704;" class="legend-color"></div>
+      <span>120,001+</span>
+    </div>
+  </div>
+
+  <script>
+    const width = 1000, height = 600;
+
+    const svg = d3.select("#map")
+      .append("svg")
+      .attr("viewBox", `0 0 ${width} ${height}`);
+
+    const tooltip = d3.select("#tooltip");
+
+    Promise.all([
+      d3.json("https://raw.githubusercontent.com/Chi-Loong/HASS02.526/master/assignments/sgmap.json"),
+      d3.csv("https://raw.githubusercontent.com/Chi-Loong/HASS02.526/master/assignments/population2023.csv")
+    ]).then(([geoData, popData]) => {
+      const mapData = geoData.features;
+
+      mapData.forEach(d => {
+        const subzone = popData.find(e => e.Subzone.toUpperCase() === d.properties.Name.toUpperCase());
+        d.popdata = subzone ? parseInt(subzone.Population) : 0;
+      });
+
+      const colorScale = d3.scaleThreshold()
+        .domain([1, 20000, 40000, 60000, 80000, 100000, 120000])
+        .range(["#ffd4a3", "#ffb174", "#ff8f47", "#ff6c1a", "#e6550d", "#a63603", "#7f2704"]);
+
+      const projection = d3.geoMercator()
+        .center([103.851959, 1.290270])
+        .fitExtent([[20, 20], [980, 580]], geoData);
+
+      const path = d3.geoPath().projection(projection);
+
+      svg.append("g")
+        .selectAll("path")
+        .data(mapData)
+        .enter()
+        .append("path")
+        .attr("d", path)
+        .attr("fill", d => colorScale(d.popdata))
+        .attr("stroke", "#fff")
+        .attr("stroke-width", 0.5)
+        .on("mouseover", (event, d) => {
+          d3.select(event.currentTarget).attr("stroke", "black").attr("stroke-width", 1.5);
+
+          tooltip.style("opacity", 1)
+            .html(`<strong>${d.properties.Name}</strong><br>Population: ${d.popdata.toLocaleString()}`)
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 40 + "px");
+        })
+        .on("mouseout", (event) => {
+          d3.select(event.currentTarget).attr("stroke", "#fff").attr("stroke-width", 0.5);
+          tooltip.style("opacity", 0);
+        });
+    });
+  </script>
+</body>
+</html>
