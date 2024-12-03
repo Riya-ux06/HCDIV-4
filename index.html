@@ -6,31 +6,46 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <style>
     body {
-      font-family: "Poppins", Arial, sans-serif;
-      background-color: #2a2a2a;
+      font-family: "Roboto", Arial, sans-serif;
+      background-color: #000;
       color: #fff;
-      text-align: center;
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden; /* Prevent scrolling */
     }
 
     h2 {
       margin: 20px 0;
+      font-size: 3em; /* Increased title size */
       text-transform: uppercase;
-      font-size: 24px;
-      color: #f7c59f;
+    }
+
+    /* Map container */
+    .map-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: calc(100vh - 160px); /* 160px leaves space for the legend and title */
+      width: 80vw;
+      position: relative;
     }
 
     #map {
-      width: 100vw;
-      height: 90vh;
+      flex-grow: 1;
+      overflow: hidden; /* Prevent map from overflowing */
     }
 
+    /* Tooltip styles */
     .tooltip {
       position: absolute;
       background-color: #fff;
       color: #333;
-      border: 1px solid #c87a5f;
+      border: 1px solid #999;
       border-radius: 5px;
       padding: 10px;
       font-size: 14px;
@@ -39,76 +54,94 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     }
 
+    /* Legend container */
     .legend-container {
-      position: absolute;
-      bottom: 30px;
-      left: 10px; /* Shifted further to the left */
-      background-color: rgba(255, 255, 255, 0.9);
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      z-index: 1000;
+      justify-content: center;
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      position: absolute;
+      bottom: 0;
+    }
+
+    .legend-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px; /* Increased space between items */
+      justify-content: center;
     }
 
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 15px;
+      font-size: 16px; /* Increased font size */
+      color: black;
     }
 
     .legend-color {
-      width: 20px;
-      height: 20px;
+      width: 35px;
+      height: 35px;
       border: 1px solid #000;
+    }
+
+    path.hovered {
+      fill: #66bb6a !important;
+      stroke: #333;
+      stroke-width: 2px;
     }
   </style>
 </head>
 <body>
+  <h2>Singapore Population Choropleth 2023</h2>
 
-  <h2>Singapore Population Choropleth</h2>
-  <div id="map"></div>
-  <div id="tooltip" class="tooltip"></div>
-
-  <div class="legend-container">
-    <div class="legend-item">
-      <div style="background-color: #ffd4a3;" class="legend-color"></div>
-      <span>0 - 20,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #ffb174;" class="legend-color"></div>
-      <span>20,001 - 40,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #ff8f47;" class="legend-color"></div>
-      <span>40,001 - 60,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #ff6c1a;" class="legend-color"></div>
-      <span>60,001 - 80,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #e6550d;" class="legend-color"></div>
-      <span>80,001 - 100,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #a63603;" class="legend-color"></div>
-      <span>100,001 - 120,000</span>
-    </div>
-    <div class="legend-item">
-      <div style="background-color: #7f2704;" class="legend-color"></div>
-      <span>120,001+</span>
+  <div class="map-container">
+    <div id="map"></div>
+    <div class="legend-container">
+      <div class="legend-content">
+        <div class="legend-item">
+          <div style="background-color: #a5d6a7;" class="legend-color"></div>
+          <span>0 - 20,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #81c784;" class="legend-color"></div>
+          <span>20,001 - 40,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #66bb6a;" class="legend-color"></div>
+          <span>40,001 - 60,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #388e3c;" class="legend-color"></div>
+          <span>60,001 - 80,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #2c6e2f;" class="legend-color"></div>
+          <span>80,001 - 100,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #1b5e20;" class="legend-color"></div>
+          <span>100,001 - 120,000</span>
+        </div>
+        <div class="legend-item">
+          <div style="background-color: #004d40;" class="legend-color"></div>
+          <span>120,001+</span>
+        </div>
+      </div>
     </div>
   </div>
 
+  <div id="tooltip" class="tooltip"></div>
+
   <script>
-    const width = 1000, height = 600;
+    const width = 1000, height = 700;
 
     const svg = d3.select("#map")
       .append("svg")
-      .attr("viewBox", `0 0 ${width} ${height}`);
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .attr("preserveAspectRatio", "xMidYMid meet");
 
     const tooltip = d3.select("#tooltip");
 
@@ -125,11 +158,11 @@
 
       const colorScale = d3.scaleThreshold()
         .domain([1, 20000, 40000, 60000, 80000, 100000, 120000])
-        .range(["#ffd4a3", "#ffb174", "#ff8f47", "#ff6c1a", "#e6550d", "#a63603", "#7f2704"]);
+        .range(["#a5d6a7", "#81c784", "#66bb6a", "#388e3c", "#2c6e2f", "#1b5e20", "#004d40"]);
 
       const projection = d3.geoMercator()
         .center([103.851959, 1.290270])
-        .fitExtent([[20, 20], [980, 580]], geoData);
+        .fitExtent([[20, 20], [width - 20, height - 20]], geoData);
 
       const path = d3.geoPath().projection(projection);
 
@@ -143,15 +176,15 @@
         .attr("stroke", "#fff")
         .attr("stroke-width", 0.5)
         .on("mouseover", (event, d) => {
-          d3.select(event.currentTarget).attr("stroke", "black").attr("stroke-width", 1.5);
+          d3.select(event.currentTarget).classed("hovered", true);
 
           tooltip.style("opacity", 1)
             .html(`<strong>${d.properties.Name}</strong><br>Population: ${d.popdata.toLocaleString()}`)
             .style("left", event.pageX + 10 + "px")
             .style("top", event.pageY - 40 + "px");
         })
-        .on("mouseout", (event) => {
-          d3.select(event.currentTarget).attr("stroke", "#fff").attr("stroke-width", 0.5);
+        .on("mouseout", (event, d) => {
+          d3.select(event.currentTarget).classed("hovered", false);
           tooltip.style("opacity", 0);
         });
     });
