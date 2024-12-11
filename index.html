@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -13,7 +13,6 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      justify-content: flex-start;
       align-items: center;
       height: 100vh;
       overflow: hidden;
@@ -21,22 +20,20 @@
 
     h2 {
       margin: 20px 0;
-      font-size: 3.5em;
+      font-size: 2em;
       text-transform: uppercase;
     }
 
-    /* Map container centered */
     .map-container {
       display: flex;
       justify-content: center;
       align-items: center;
-      width: 100%;  /* Full width of the screen */
-      height: 100%; /* Full height of the screen */
-      margin: 0 auto;
+      width: 100%;
+      height: 80%;
     }
 
     #map {
-      width: 100%;
+      width: 90%;
       height: 100%;
     }
 
@@ -59,29 +56,23 @@
       left: 50%;
       transform: translateX(-50%);
       display: flex;
+      flex-wrap: wrap;
       justify-content: center;
       background: rgba(255, 255, 255, 0.9);
       border-radius: 8px;
       padding: 10px 15px;
     }
 
-    .legend-content {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 40px;
-    }
-
     .legend-item {
       display: flex;
       align-items: center;
-      gap: 15px;
-      font-size: 20px;
-      color: black;
+      margin: 0 10px;
+      font-size: 14px;
     }
 
     .legend-color {
-      width: 40px;
-      height: 40px;
+      width: 20px;
+      height: 20px;
       border: 1px solid #000;
     }
 
@@ -100,42 +91,40 @@
   </div>
 
   <div class="legend-container">
-    <div class="legend-content">
-      <div class="legend-item">
-        <div style="background-color: #a5d6a7;" class="legend-color"></div>
-        <span>0 - 20,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #81c784;" class="legend-color"></div>
-        <span>20,001 - 40,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #66bb6a;" class="legend-color"></div>
-        <span>40,001 - 60,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #388e3c;" class="legend-color"></div>
-        <span>60,001 - 80,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #2c6e2f;" class="legend-color"></div>
-        <span>80,001 - 100,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #1b5e20;" class="legend-color"></div>
-        <span>100,001 - 120,000</span>
-      </div>
-      <div class="legend-item">
-        <div style="background-color: #004d40;" class="legend-color"></div>
-        <span>120,001+</span>
-      </div>
+    <div class="legend-item">
+      <div style="background-color: #a5d6a7;" class="legend-color"></div>
+      <span>0 - 20,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #81c784;" class="legend-color"></div>
+      <span>20,001 - 40,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #66bb6a;" class="legend-color"></div>
+      <span>40,001 - 60,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #388e3c;" class="legend-color"></div>
+      <span>60,001 - 80,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #2c6e2f;" class="legend-color"></div>
+      <span>80,001 - 100,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #1b5e20;" class="legend-color"></div>
+      <span>100,001 - 120,000</span>
+    </div>
+    <div class="legend-item">
+      <div style="background-color: #004d40;" class="legend-color"></div>
+      <span>120,001+</span>
     </div>
   </div>
 
   <div id="tooltip" class="tooltip"></div>
 
   <script>
-    const width = 1000, height = 600;
+    const width = 800, height = 600;
 
     const svg = d3.select("#map")
       .append("svg")
@@ -161,7 +150,7 @@
 
       const projection = d3.geoMercator()
         .center([103.851959, 1.290270])
-        .scale(70000)  // Reduced scale for better visibility
+        .scale(70000)
         .translate([width / 2, height / 2]);
 
       const path = d3.geoPath().projection(projection);
@@ -191,3 +180,4 @@
   </script>
 </body>
 </html>
+
